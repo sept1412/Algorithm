@@ -1,0 +1,141 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+
+#define INPUT_FILE "input.txt"
+using namespace std;
+
+int calculate (string &eq);
+
+int main() 
+{
+  ifstream f(INPUT_FILE);
+  if (!f.is_open())
+  {
+    cout << "can't open " << INPUT_FILE << endl;
+    return -1;
+  }
+  
+  string input;
+  try 
+  {
+    getline (f, input);
+  }
+  catch (int e) 
+  {
+    cout << "An exception occured. Exception no." << e << endl;
+    return -1;
+  }
+  
+  cout << "Result of " << input << " is : " << calculate (input) << endl; 
+
+  f.close();
+  return 0;
+}
+
+enum oper {Unknown = 0, Plus, Minus, Multiply, Divide};
+bool isDigit (char c);
+bool isOper (char c);
+bool isBracket (char c);
+oper getOperFromChar (char c);
+int closeBracketIdx (string &s, int openIdx);
+int cal (int lhs, int rhs, oper op);
+
+int cal (int lhs, int rhs, oper op)
+{
+  switch (op)
+  {
+    case (Plus):
+      return lhs+rhs;
+    case (Minus):
+      return lhs-rhs;
+    case (Multiply):
+      return lhs*rhs;
+    case (Divide):
+      return lhs/rhs;
+    default:
+      //throw exception
+      return -1;
+  }
+  //throw exception this shouln't execute
+  return -1;
+}
+
+bool isDigit (char c)
+{
+  if (c >= '0' && c <= '9')
+    return true;
+  return false;
+}
+
+bool isOper (char c)
+{
+  if (c == '+' || c == '-' || c == '*' || c == '/')
+    return true;
+  return false;
+}
+
+bool isBracket (char c)
+{
+  if (c == '[' || c == '{' || c == '('
+      || c == ']' || c == '}' || c == ')')
+    return true;
+  return false;
+}
+
+oper getOperFromChar (char c)
+{
+  switch (c)
+  {
+    case '+': 
+      return Plus;
+    case '-':
+      return Minus;
+    case '*':
+      return Multiply;
+    case '/':
+      return Divide;
+    default:
+      return Unknown;
+  }
+
+  return Unknown;
+}
+
+int closeBracketIdx (string &s, int openIdx) {
+  
+  return 0;
+}
+
+
+
+int calculate (string &eq)
+{
+  int ret = 0;
+
+  int val = 0;
+  oper op = Plus;
+  for (int i = 0; i < eq.size(); i++)
+  {
+    if (isDigit (eq[i]))
+    {
+      val = (val * 10) + (eq[i] - '0');
+      if (i == eq.size()-1 || !isDigit (eq[i+1]))
+      { 
+        ret = cal (ret, val, op);
+        val = 0;
+      }
+    }
+    if (isOper (eq[i]))
+      op = getOperFromChar (eq[i]);
+    if (isBracket (eq[i]))
+    {
+      //find last bracket and recursive them
+      int idx = closeBracketIdx (eq, i);
+      string s(eq, i+1, idx - (i+1));
+      ret = cal (ret, calculate (s), op);
+      i = idx;
+    }
+  }
+  return ret;
+}
