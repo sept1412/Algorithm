@@ -20,8 +20,9 @@ algorithm
 
 using namespace std;
 
-const vector<int> input = {3, 4, 5, 9, 2, 1, 3};
+//const vector<int> input = {3, 4, 5, 9, 2, 1, 3};
 //const vector<int> input = {3, 4};
+const vector<int> input = {3, 4, 3, 4, 3, 4, 3};
 
 struct data {
   int index;
